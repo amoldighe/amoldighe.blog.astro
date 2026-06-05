@@ -4,7 +4,7 @@ import {
   fontProviders,
   svgoOptimizer,
 } from "astro/config";
-import tailwindcss from "@tailwindcss/vite";
+
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import { unified } from "@astrojs/markdown-remark";
@@ -52,9 +52,6 @@ export default defineConfig({
         transformerNotationDiff({ matchAlgorithm: "v3" }),
       ],
     },
-  },
-  vite: {
-    plugins: [tailwindcss()],
   },
   fonts: [
     {
