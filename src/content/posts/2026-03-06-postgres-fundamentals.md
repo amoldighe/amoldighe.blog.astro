@@ -29,7 +29,7 @@ Unlike standard relational databases, Postgres allows for custom data types, inh
 
 Postgres Architecture is built around a concept of background processes and shared memory.
 
-<img  src="/img/postgres-architecture.png">
+![postgres-architecture](@/assets/images/postgres-architecture.png)
 
 ## Background Processes
 These are the essential 'housekeeping' processes that keep the system running. The diagram shows the Postmaster handling incoming client connections and spawning individual Backend Processes.
@@ -109,7 +109,7 @@ A simple map that tracks which pages in a table contain only "frozen" (all-visib
 
 **MVCC & WAL** are two important concepts in Postgres that enable high concurrency and data durability.
 
-<img  src="/img/postgres-mvcc.png">
+![postgres-mvcc](@/assets/images/postgres-mvcc.png)
 
 ## MVCC (Multi-Version Concurrency Control) 
 MVCC is the engine that allows multiple users to read and write to the same table simultaneously without locking each other out. The core philosophy is: "Readers never block writers, and writers never block readers." Here is how it works at the transaction level:
@@ -142,7 +142,7 @@ To determine if a row is visible to your current transaction, Postgres follows t
 
 Because every uppubDate: creates a new version, the database would eventually run out of disk space. This "clutter" is called Bloat. The Autovacuum process periodically scans the table. It looks for rows where the xmax is so old that no active transaction could possibly need to see it anymore. It then clears those rows so the space can be reused for new data.
 
-<img  src="/img/postgres-wal.png">
+![postgres-wal.png](@/assets/images/postgres-wal.png)
 
 ## WAL (Write-Ahead Logging) 
 WAL is the fundamental mechanism that guarantees database durability (the 'D' in ACID). Its core philosophy can be summarized in one rule: "No change to data files is ever made until a description of that change has been written to the log and flushed to permanent storage." Here is a conceptual breakdown of how WAL works:
