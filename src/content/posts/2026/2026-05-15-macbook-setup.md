@@ -3,6 +3,8 @@
 title:  "Macbook Terminal Setup"
 pubDatetime:   2026-05-15
 description: ""
+heroImage: '../../../assets/images/macbookterminal.png'
+heroImageCaption: 'Image generated with Google Gemini'
 tags:
   - Mac
   - Terminal

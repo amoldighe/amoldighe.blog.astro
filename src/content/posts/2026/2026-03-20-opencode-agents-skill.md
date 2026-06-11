@@ -3,6 +3,8 @@
 title: "OpenCode, Agents & Skills"
 pubDatetime: 2026-03-20
 description: ""
+heroImage: '../../../assets/images/opencode.png'
+heroImageCaption: 'Opencode terminal screenshot'
 tags:
   - OpenCode
   - Agents

@@ -3,6 +3,8 @@
 title:  "Postgres Disk & WAL"
 pubDatetime:   2026-04-09
 description: ""
+heroImage: '../../../assets/images/postgres-wal-hero.png'
+heroImageCaption: 'Image generated with Google Gemini'
 tags:
   - Postgres
   - Database

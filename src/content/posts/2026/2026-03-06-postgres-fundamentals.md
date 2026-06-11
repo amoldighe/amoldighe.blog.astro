@@ -3,7 +3,8 @@
 title:  "Postgres Fundamentals - The Concept"
 pubDatetime:   2026-03-06
 description: ""
-heroImage: '../../assets/images/cover.png'
+heroImage: '../../../assets/images/postgres-fundamental.png'
+heroImageCaption: 'Image generated with Chatgpt'
 tags:
   - Postgres
   - Database
