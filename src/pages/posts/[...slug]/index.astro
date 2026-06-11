@@ -65,6 +65,7 @@ const {
   description,
   ogImage: initOgImage,
   heroImage,
+  heroImageCaption,
   canonicalURL,
   pubDatetime,
   modDatetime,
@@ -135,11 +136,18 @@ const ogImage = ogImageUrl
     </div>
 
     {heroImage && (
-      <Image
-        src={heroImage}
-        alt={title}
-        class="my-8 rounded-xl object-cover w-full h-auto max-h-[60vh]"
-      />
+      <figure class="my-8">
+        <Image
+          src={heroImage}
+          alt={title}
+          class="rounded-xl object-cover w-full h-auto max-h-[60vh]"
+        />
+        {heroImageCaption && (
+          <figcaption class="mt-2 text-center text-sm italic opacity-75">
+            {heroImageCaption}
+          </figcaption>
+        )}
+      </figure>
     )}
 
     <article
