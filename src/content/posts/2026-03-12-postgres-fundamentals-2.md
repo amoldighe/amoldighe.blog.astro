@@ -3,7 +3,7 @@
 title: "PostgreSQL Fundamentals - Configuration & Structure"
 pubDatetime: 2026-03-16
 description: ""
-ogImage: ../../assets/images/cover.png
+heroImage: '../../assets/images/cover.png'
 tags:
   - PostgreSQL
   - Database

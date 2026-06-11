@@ -3,7 +3,8 @@
 title: "Google I/O 2026: Entering the Agentic Era"
 subtitle: "A complete guide to the breakthrough AI models, personal agents, and developer frameworks unveiled at this year's developer conference."
 pubDatetime: 2026-05-21
-ogImage: ../../assets/images/cover.png
+heroImage: '../../assets/images/google-io-photo.jpeg'
+heroImageCaption: 'Image generated with Google Gemini'
 description: ""
 tags:
   - Google IO
@@ -49,27 +50,7 @@ We have officially transitioned from the "Generative Era" of AI to the **"Agenti
 
 Instead of just responding to prompts or summarizing search queries, Google's latest wave of technology centers on autonomous, proactive AI agents that can reason, orchestrate workflows, collaborate, and execute long-horizon digital tasks in the background.
 
-```mermaid
-graph TD
-    A[Gemini 3.5 Core Engine] --> B(Consumer & Workspace Agents)
-    A --> C(Developer Platforms & Security)
-    A --> D(Hardware & Wearables)
-    A --> E(AI Infrastructure)
-    
-    B --> B1[Gemini Spark]
-    B --> B2[Universal Cart]
-    B --> B3[Daily Brief]
-    B --> B4[Ask YouTube & Ask Maps]
-    B --> B5[Docs Live & Google Pics]
-    
-    C --> C1[Antigravity 2.0]
-    C --> C2[CodeMender]
-    
-    D --> D1[Intelligent Eyewear]
-    D --> D2[Wear OS 7 & Widgets]
-
-    E --> E1[TPU 8t & TPU 8i]
-```
+![google-io-2026](@/assets/images/google-io-launch.png)
 
 Here is a comprehensive breakdown of every major tool and launch at Google I/O 2026:
 
