@@ -1,7 +1,7 @@
 ---
 
 title: "OpenCode, Agents & Skills"
-pubDate: 2026-03-20
+pubDatetime: 2026-03-20
 description: ""
 tags:
   - OpenCode

@@ -1,7 +1,7 @@
 ---
 
 title:  "Opensource AI Fundamentals"
-pubDate:   2026-02-24
+pubDatetime:   2026-02-24
 description: ""
 tags:
   - AI

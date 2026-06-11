@@ -1,5 +1,5 @@
 ---
-pubDate:   2016-09-09
+pubDatetime:   2016-09-09
 title: Gitlab Import Repository
 description: "How to import repositories into GitLab."
 ---

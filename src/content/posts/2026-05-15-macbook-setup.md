@@ -1,7 +1,7 @@
 ---
 
 title:  "Macbook Terminal Setup"
-pubDate:   2026-05-15
+pubDatetime:   2026-05-15
 description: ""
 tags:
   - Mac

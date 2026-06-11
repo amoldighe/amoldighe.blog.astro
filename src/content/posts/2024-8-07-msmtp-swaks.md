@@ -1,7 +1,7 @@
 ---
 
 title:  "Msmtp & Swaks"
-pubDate:   2024-8-07
+pubDatetime:   2024-8-07
 description: ""
 tags:
   - msmtp

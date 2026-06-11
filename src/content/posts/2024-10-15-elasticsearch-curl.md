@@ -1,7 +1,7 @@
 ---
 
 title:  "Elasticsearch Cheatsheet using CURL"
-pubDate:   2024-10-15
+pubDatetime:   2024-10-15
 description: ""
 tags:
   - elk

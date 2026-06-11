@@ -1,7 +1,7 @@
 ---
 
 title:  "Consul Alerts"
-pubDate:   2017-07-01
+pubDatetime:   2017-07-01
 description: ""
 tags:
   - consul
