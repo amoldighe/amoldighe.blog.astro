@@ -1,7 +1,7 @@
 ---
 
 title:  "Postgres Disk & WAL"
-pubDate:   2026-04-09
+pubDatetime:   2026-04-09
 description: ""
 tags:
   - Postgres

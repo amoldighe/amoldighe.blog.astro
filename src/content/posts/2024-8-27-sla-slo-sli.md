@@ -18,7 +18,7 @@ tags:
 Service Level Agreements (SLAs), Service Level Objectives (SLOs), and Service Level Indicators (SLIs) are fundamental concepts for ensuring the reliability and performance of software systems, application or a service. Understanding these concepts can help influence an organization, team, project to work towards achieving and delivering an high performance and reliable service.
 The whole concept can looked from a top down or bottom up approach to align a service to achieve the business objective.
 
-![sla-slo-sli](./img/sla-slo-sli.drawio.png)
+![sla-slo-sli](@/assets/images/sla-slo-sli.drawio.png)
 
 From an SRE perspective, SLAs, SLOs, and SLIs form a crucial framework for defining, measuring, and improving service reliability.
 

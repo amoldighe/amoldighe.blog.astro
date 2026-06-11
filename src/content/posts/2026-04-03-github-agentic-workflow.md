@@ -1,7 +1,7 @@
 ---
 
 title: "GitHub Agentic Workflow"
-pubDate: 2026-04-03
+pubDatetime: 2026-04-03
 description: ""
 tags:
   - GitHub
