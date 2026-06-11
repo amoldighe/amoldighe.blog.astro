@@ -1,7 +1,7 @@
 ---
 
 title:  "SLA, SLO, SLI"
-pubDatetime:   2024-8-27
+pubDatetime:   2024-08-27
 description: ""
 tags:
   - sla

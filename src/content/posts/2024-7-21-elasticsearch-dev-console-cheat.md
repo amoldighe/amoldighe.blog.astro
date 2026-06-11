@@ -1,7 +1,7 @@
 ---
 
 title:  "Elasticsearch Cheatsheet"
-pubDatetime:   2024-7-21
+pubDatetime:   2024-07-21
 description: ""
 tags:
   - elk
