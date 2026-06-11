@@ -1,7 +1,7 @@
 ---
 
 title:  "Exploring Ceph"
-pubDatetime: 2018-1-20
+pubDatetime: 2018-01-20
 description: ""
 tags:
   - Ceph

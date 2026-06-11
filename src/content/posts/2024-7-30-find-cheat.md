@@ -1,7 +1,7 @@
 ---
 
 title:  "Using Find & Sed"
-pubDatetime:   2024-7-30
+pubDatetime:   2024-07-30
 description: ""
 tags:
   - find
