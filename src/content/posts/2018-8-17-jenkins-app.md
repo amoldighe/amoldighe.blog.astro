@@ -1,7 +1,7 @@
 ---
 
 title:  "Jenkins - Deploying App"
-pubDate:   2018-8-17
+pubDatetime:   2018-8-17
 description: ""
 tags:
   - Jenkins

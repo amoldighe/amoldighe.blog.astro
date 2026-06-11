@@ -1,5 +1,5 @@
 ---
-pubDate:   2016-08-27
+pubDatetime:   2016-08-27
 title: Consul DNS
 description: ""
 ---

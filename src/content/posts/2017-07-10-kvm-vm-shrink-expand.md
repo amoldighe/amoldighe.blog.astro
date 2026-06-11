@@ -1,7 +1,7 @@
 ---
 
 title:  "KVM VM shrink-expand"
-pubDate:   2017-07-10
+pubDatetime:   2017-07-10
 description: ""
 tags:
   - KVM

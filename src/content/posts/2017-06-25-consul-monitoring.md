@@ -1,7 +1,7 @@
 ---
 
 title:  "Consul Service Discovery - Monitoring"
-pubDate:   2017-06-25
+pubDatetime: 2017-06-25
 description: ""
 tags:
   - consul

@@ -1,7 +1,7 @@
 ﻿---
 
 title:  "Cloud Image on KVM using qemu-nbd"
-pubDate:   2017-08-19
+pubDatetime:   2017-08-19
 description: ""
 tags:
   - KVM
