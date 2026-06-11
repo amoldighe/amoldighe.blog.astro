@@ -3,6 +3,8 @@
 title: "GitHub Agentic Workflow"
 pubDatetime: 2026-04-03
 description: ""
+heroImage: '../../../assets/images/github-actions.png'
+heroImageCaption: 'Image generated with Google Gemini'
 tags:
   - GitHub
   - Actions

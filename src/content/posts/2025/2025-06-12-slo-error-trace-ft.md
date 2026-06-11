@@ -3,7 +3,7 @@
 title:  "SRE Concepts"
 pubDatetime:   2025-06-12
 description: ""
-heroImage: '../../assets/images/cover.png'
+heroImage: '../../../assets/images/cover.png'
 heroImageCaption: 'Image generated with Google Gemini'
 tags:
   - SRE

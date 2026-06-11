@@ -3,6 +3,8 @@
 title: "Microsoft Build 2026: A Deep Dive"
 subtitle: "Microsoft's Agentic Shift, building an AI ecosystem with Ion, OpenClaw and RTX Spark"
 pubDatetime: 2026-06-03
+heroImage: '../../../assets/images/microsoftbuild2026.png'
+heroImageCaption: 'Image generated with Google Gemini'
 description: ""
 tags:
   - AI

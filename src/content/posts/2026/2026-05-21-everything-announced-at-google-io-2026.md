@@ -3,7 +3,7 @@
 title: "Google I/O 2026: Entering the Agentic Era"
 subtitle: "A complete guide to the breakthrough AI models, personal agents, and developer frameworks unveiled at this year's developer conference."
 pubDatetime: 2026-05-21
-heroImage: '../../assets/images/google-io-photo.jpeg'
+heroImage: '../../../assets/images/google-io-photo.jpeg'
 heroImageCaption: 'Image generated with Google Gemini'
 description: ""
 tags:
