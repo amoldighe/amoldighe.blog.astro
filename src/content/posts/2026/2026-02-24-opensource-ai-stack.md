@@ -3,6 +3,8 @@
 title:  "Opensource AI Fundamentals"
 pubDatetime:   2026-02-24
 description: ""
+heroImage: '../../../assets/images/opensource-models.png'
+heroImageCaption: 'Image generated with Google Gemini 3.0'
 tags:
   - AI
   - LLM
@@ -13,6 +15,7 @@ tags:
   - Mistral
   - Ollama
   - n8n
+  - Gemma
   - OpenAI Agent SDK
 ---
 
