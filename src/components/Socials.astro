@@ -12,11 +12,17 @@ const items = await Promise.all(
   socials.map(async ({ name, url, linkTitle }) => {
     const mod = await icons[`/src/assets/icons/socials/${name}.svg`]?.();
     const Icon = mod?.default;
+    const platform =
+      name.toLowerCase() === "linkedin"
+        ? "LinkedIn"
+        : name.toLowerCase() === "whatsapp"
+          ? "WhatsApp"
+          : name.charAt(0).toUpperCase() + name.slice(1);
     const title =
       linkTitle ??
       (url.startsWith("mailto:") || name === "mail"
         ? `Send an email to ${site.title}`
-        : `${site.title} on ${name.charAt(0).toUpperCase() + name.slice(1)}`);
+        : `${site.title} on ${platform}`);
     return { name, url, title, Icon };
   })
 );
@@ -30,8 +36,14 @@ const items = await Promise.all(
           href={url}
           class="p-2 hover:rotate-6 sm:p-1"
           title={title}
-          target={name === "mail" || url.startsWith("mailto:") ? undefined : "_blank"}
-          rel={name === "mail" || url.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+          target={
+            name === "mail" || url.startsWith("mailto:") ? undefined : "_blank"
+          }
+          rel={
+            name === "mail" || url.startsWith("mailto:")
+              ? undefined
+              : "noopener noreferrer"
+          }
         >
           <Icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
           <span class="sr-only">{title}</span>
