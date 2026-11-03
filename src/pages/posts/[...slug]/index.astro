@@ -135,20 +135,22 @@ const ogImage = ogImageUrl
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
 
-    {heroImage && (
-      <figure class="my-8">
-        <Image
-          src={heroImage}
-          alt={title}
-          class="rounded-xl object-cover w-full h-auto max-h-[60vh]"
-        />
-        {heroImageCaption && (
-          <figcaption class="mt-2 text-center text-sm italic opacity-75">
-            {heroImageCaption}
-          </figcaption>
-        )}
-      </figure>
-    )}
+    {
+      heroImage && (
+        <figure class="my-8">
+          <Image
+            src={heroImage}
+            alt={title}
+            class="h-auto max-h-[60vh] w-full rounded-xl object-cover"
+          />
+          {heroImageCaption && (
+            <figcaption class="mt-2 text-center text-sm italic opacity-75">
+              {heroImageCaption}
+            </figcaption>
+          )}
+        </figure>
+      )
+    }
 
     <article
       id="article"
@@ -238,6 +240,7 @@ const ogImage = ogImageUrl
     const codeBlocks = Array.from(document.querySelectorAll("pre"));
 
     for (const codeBlock of codeBlocks) {
+      if (codeBlock.querySelector("code.language-mermaid")) continue;
       const wrapper = document.createElement("div");
       wrapper.style.position = "relative";
 

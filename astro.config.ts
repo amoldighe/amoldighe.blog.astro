@@ -35,6 +35,10 @@ export default defineConfig({
     },
   },
   markdown: {
+    syntaxHighlight: {
+      type: "shiki",
+      excludeLangs: ["mermaid"],
+    },
     processor: unified({
       remarkPlugins: [
         remarkToc,
