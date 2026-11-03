@@ -1,7 +1,7 @@
 ---
-title: "Back-of-the-Envelope Simplified"
+title: "Back-of-the-Envelope Framework Simplified"
 pubDatetime: 2026-11-03
-description: "Back-of-the-Envelope concept simplified"
+description: "Back-of-the-Envelope framework concepts simplified"
 heroImage: '../../../assets/images/backofenvelope.png'
 heroImageCaption: 'Image generated with Google Gemini'
 tags:
@@ -153,9 +153,8 @@ Flow of estimation:
 | Bandwidth | Both QPS numbers, object size                  | Bytes per second in and out   |
 | Memory    | Read traffic, object size, hit ratio           | Cache size                    |
 
- For better understanding, lets build on above concepts. Back-of-the-envelope estimation is a rough calculation with round numbers that tells you the approximate size of a system before you design it. It exists to test whether a design is feasible, to size its components, and to show your reasoning. 
 
+ Back-of-the-envelope is heuristic framework within system design engineering. It allows estimation for rough calculation with round numbers that tells you the approximate size of a system before you design it. It exists to test whether a design is feasible, to size its components, and to show your reasoning. 
 
-
-
+ For further understanding, we will build on above concepts to construct multiple use cases of varying traffic, storage & bandwidth in the next post. 
 

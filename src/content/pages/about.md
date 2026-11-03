@@ -5,11 +5,11 @@ description: "A bit about me and this blog."
 
 Hey, I’m Amol!
 
-My obsession with computers started back in the DOS days—tweaking HIMEM.SYS on a 486 just to squeeze out enough memory to run Prince of Persia, and later hacking custom Android ROMs onto early Windows Mobile devices. That early curiosity naturally evolved into a lifelong passion for open-source software, breaking down complex systems, and building resilient architecture. When I’m not deep in the terminal, you’ll usually find me obsessing over pc games, nerding out over personal finance and compounding strategies, or experimenting with new recipes in the kitchen (where good timing and process automation matter just as much as in production).
+My obsession with technology started back in the DOS days—tweaking HIMEM.SYS on a 486 just to squeeze out enough memory to run Prince of Persia, and later hacking custom Android ROMs onto early Windows Mobile devices. That early curiosity naturally evolved into a lifelong passion for open-source technology, breaking down complex systems, and building resilient architecture. When I’m not deep in the terminal, you’ll usually find me obsessing over gaming, nerding out over personal finance and compounding strategies, or experimenting with new recipes in the kitchen - where good timing and process automation matter just as much as in production 😀.
 
 Over the past two decades, my engineering journey has been all about keeping mission-critical systems fast, scalable, and unbreakable:
 
-+ HPC & Render Infrastructure: Cut my teeth at Hollywood VFX powerhouse Rhythm & Hues, running 24x7 distributed GPU render farms, Isilon storage, and petabyte-scale media pipelines across global studios.
++ HPC & Render Infrastructure: Cut my teeth at Hollywood VFX powerhouse Rhythm & Hues [IMDB](https://www.imdb.com/name/nm2873079/), running 24x7 distributed GPU render farms, Isilon storage, and petabyte-scale media pipelines across global studios.
 
 + Nationwide Telecom Cloud: Led DevOps teams at Reliance Jio, architecting 5 massive multi-tenant OpenStack clouds with active-active HA across nationwide data centers supporting millions of users.
 
