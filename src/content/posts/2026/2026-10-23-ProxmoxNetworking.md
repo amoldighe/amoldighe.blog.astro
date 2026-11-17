@@ -27,28 +27,28 @@ In Proxmox VE, networking is all about connecting virtual machines (VMs) and Lin
 We will look at seven core networking components operate specifically within the context of a Proxmox node.
 
 
-       [ Public Internet ]
-               │
-       [ Physical Router / Internet Gateway ]
-               │
- ┌─────────────▼────────────────────────────────┐
- │ Proxmox Physical Host                        │
- │   Physical NIC (enp3s0)                      │
- │         │                                    │
- │   ┌─────▼──────────────────────────────┐     │
- │   │ Linux Bridge (vmbr0)               │     │
- │   └─────┬──────────────┬──────────────┬┘     │
- │         │              │              │      │
- │   ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼──┐   │
- │   │ tap101i0  │  │ tap102i0  │  │ vnet1  │   │ (Virtual Interfaces)
- │   └─────┬─────┘  └─────┬─────┘  └─────┬──┘   │
- │         │              │              │      │
- │     [ VLAN 10 ]    [ VLAN 20 ]    [ VXLAN ]  │ (Traffic Isolation)
- │         │              │              │      │
- │     ┌───▼───┐       ┌──▼────┐       ┌─▼────┐ │
- │     │ VM 101│       │ VM 102│       │VM 103│ │ (Guest Instances)
- │     └───────┘       └───────┘       └──────┘ │
- └──────────────────────────────────────────────┘
+                                  [ Public Internet ]
+                                          │
+                                  [ Physical Router / Internet Gateway ]
+                                          │
+                            ┌─────────────▼────────────────────────────────┐
+                            │ Proxmox Physical Host                        │
+                            │   Physical NIC (enp3s0)                      │
+                            │         │                                    │
+                            │   ┌─────▼──────────────────────────────┐     │
+                            │   │ Linux Bridge (vmbr0)               │     │
+                            │   └─────┬──────────────┬──────────────┬┘     │
+                            │         │              │              │      │
+                            │   ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼──┐   │
+                            │   │ tap101i0  │  │ tap102i0  │  │ vnet1  │   │ (Virtual Interfaces)
+                            │   └─────┬─────┘  └─────┬─────┘  └─────┬──┘   │
+                            │         │              │              │      │
+                            │     [ VLAN 10 ]    [ VLAN 20 ]    [ VXLAN ]  │ (Traffic Isolation)
+                            │         │              │              │      │
+                            │     ┌───▼───┐       ┌──▼────┐       ┌─▼────┐ │
+                            │     │ VM 101│       │ VM 102│       │VM 103│ │ (Guest Instances)
+                            │     └───────┘       └───────┘       └──────┘ │
+                            └──────────────────────────────────────────────┘
 
 
 # Bridge Interface (vmbr)
