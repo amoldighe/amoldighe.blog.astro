@@ -993,6 +993,13 @@ const {
         return;
       }
 
+      // Explicit non-null elements for strict TypeScript narrowing
+      const dauEl = dauInput;
+      const actionsEl = actionsInput;
+      const payloadEl = payloadInput;
+      const ratioEl = ratioSelect;
+      const replEl = replSelect;
+
       const presets: Record<string, { dau: number; actions: number; kb: number; ratio: number; repl: number }> = {
         twitter: { dau: 250, actions: 2, kb: 1, ratio: 100, repl: 3 },
         urlshortener: { dau: 100, actions: 1, kb: 0.5, ratio: 100, repl: 3 },
@@ -1030,11 +1037,11 @@ const {
       }
 
       function calculate() {
-        const dauMillions = Math.max(parseFloat(dauInput.value) || 0, 0);
-        const actionsPerDay = Math.max(parseFloat(actionsInput.value) || 0, 0);
-        const payloadKb = Math.max(parseFloat(payloadInput.value) || 0, 0);
-        const readWriteRatio = Math.max(parseFloat(ratioSelect.value) || 1, 1);
-        const replication = Math.max(parseInt(replSelect.value, 10) || 1, 1);
+        const dauMillions = Math.max(parseFloat(dauEl.value) || 0, 0);
+        const actionsPerDay = Math.max(parseFloat(actionsEl.value) || 0, 0);
+        const payloadKb = Math.max(parseFloat(payloadEl.value) || 0, 0);
+        const readWriteRatio = Math.max(parseFloat(ratioEl.value) || 1, 1);
+        const replication = Math.max(parseInt(replEl.value, 10) || 1, 1);
 
         const totalUsers = dauMillions * 1e6;
         const totalWritesDay = totalUsers * actionsPerDay;
@@ -1091,8 +1098,8 @@ const {
         if (el) el.textContent = text;
       }
 
-      [dauInput, actionsInput, payloadInput].forEach(inp => inp?.addEventListener('input', calculate));
-      [ratioSelect, replSelect].forEach(sel => sel?.addEventListener('change', calculate));
+      [dauEl, actionsEl, payloadEl].forEach(inp => inp.addEventListener('input', calculate));
+      [ratioEl, replEl].forEach(sel => sel.addEventListener('change', calculate));
 
       document.querySelectorAll('.boe-preset-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1100,30 +1107,30 @@ const {
           const key = target.dataset.preset;
           if (key && presets[key]) {
             const p = presets[key];
-            dauInput.value = p.dau.toString();
-            actionsInput.value = p.actions.toString();
-            payloadInput.value = p.kb.toString();
-            ratioSelect.value = p.ratio.toString();
-            replSelect.value = p.repl.toString();
+            dauEl.value = p.dau.toString();
+            actionsEl.value = p.actions.toString();
+            payloadEl.value = p.kb.toString();
+            ratioEl.value = p.ratio.toString();
+            replEl.value = p.repl.toString();
             calculate();
           }
         });
       });
 
       const params = new URLSearchParams(window.location.search);
-      if (params.has('dau')) dauInput.value = params.get('dau')!;
-      if (params.has('actions')) actionsInput.value = params.get('actions')!;
-      if (params.has('kb')) payloadInput.value = params.get('kb')!;
-      if (params.has('ratio')) ratioSelect.value = params.get('ratio')!;
-      if (params.has('repl')) replSelect.value = params.get('repl')!;
+      if (params.has('dau')) dauEl.value = params.get('dau')!;
+      if (params.has('actions')) actionsEl.value = params.get('actions')!;
+      if (params.has('kb')) payloadEl.value = params.get('kb')!;
+      if (params.has('ratio')) ratioEl.value = params.get('ratio')!;
+      if (params.has('repl')) replEl.value = params.get('repl')!;
 
       copyLinkBtn?.addEventListener('click', async () => {
         const url = new URL(window.location.href);
-        url.searchParams.set('dau', dauInput.value);
-        url.searchParams.set('actions', actionsInput.value);
-        url.searchParams.set('kb', payloadInput.value);
-        url.searchParams.set('ratio', ratioSelect.value);
-        url.searchParams.set('repl', replSelect.value);
+        url.searchParams.set('dau', dauEl.value);
+        url.searchParams.set('actions', actionsEl.value);
+        url.searchParams.set('kb', payloadEl.value);
+        url.searchParams.set('ratio', ratioEl.value);
+        url.searchParams.set('repl', replEl.value);
         const fullUrl = url.toString();
         const copyTextEl = document.getElementById('boe-copy-text');
         try {
@@ -1143,11 +1150,11 @@ const {
       });
 
       copyMdBtn?.addEventListener('click', async () => {
-        const dau = dauInput.value;
-        const actions = actionsInput.value;
-        const kb = payloadInput.value;
-        const ratio = ratioSelect.value;
-        const repl = replSelect.value;
+        const dau = dauEl.value;
+        const actions = actionsEl.value;
+        const kb = payloadEl.value;
+        const ratio = ratioEl.value;
+        const repl = replEl.value;
         const writeQps = document.getElementById('boe-val-avg-write-qps')?.textContent || '';
         const peakWrite = document.getElementById('boe-val-peak-write-qps')?.textContent || '';
         const readQps = document.getElementById('boe-val-avg-read-qps')?.textContent || '';
@@ -1194,11 +1201,11 @@ const {
       });
 
       resetBtn?.addEventListener('click', () => {
-        dauInput.value = '10';
-        actionsInput.value = '5';
-        payloadInput.value = '2';
-        ratioSelect.value = '100';
-        replSelect.value = '3';
+        dauEl.value = '10';
+        actionsEl.value = '5';
+        payloadEl.value = '2';
+        ratioEl.value = '100';
+        replEl.value = '3';
         calculate();
         const url = new URL(window.location.href);
         url.search = '';
