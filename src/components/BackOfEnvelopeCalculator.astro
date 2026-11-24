@@ -1,0 +1,1225 @@
+---
+// BackOfEnvelopeCalculator.astro
+// Fully reactive Back-of-the-Envelope Capacity Estimation Calculator
+// Tailored for amoldighe.com with adaptive Light & Dark theme support
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  initialDau?: number;
+  initialActions?: number;
+  initialPayloadKb?: number;
+  initialRatio?: number;
+  initialReplication?: number;
+  showPresets?: boolean;
+  showGuide?: boolean;
+}
+
+const {
+  title = "Back-of-the-Envelope Calculator",
+  subtitle = "Estimate QPS, storage, bandwidth, and cache requirements in seconds for system design interviews and distributed systems architecture.",
+  initialDau = 10,
+  initialActions = 5,
+  initialPayloadKb = 2,
+  initialRatio = 100,
+  initialReplication = 3,
+  showPresets = true,
+  showGuide = true,
+} = Astro.props;
+---
+
+<div class="boe-container" data-initial-dau={initialDau} data-initial-actions={initialActions} data-initial-kb={initialPayloadKb} data-initial-ratio={initialRatio} data-initial-repl={initialReplication}>
+  {title && (
+    <header class="boe-header">
+      <h2 class="boe-title">{title}</h2>
+      {subtitle && <p class="boe-subtitle">{subtitle}</p>}
+    </header>
+  )}
+
+  {showPresets && (
+    <div class="boe-presets-bar" aria-label="System architecture presets">
+      <span class="boe-presets-label">Presets:</span>
+      <div class="boe-presets-buttons">
+        <button type="button" class="boe-preset-btn" data-preset="twitter">Twitter / X</button>
+        <button type="button" class="boe-preset-btn" data-preset="urlshortener">URL Shortener</button>
+        <button type="button" class="boe-preset-btn" data-preset="chatapp">Chat App</button>
+        <button type="button" class="boe-preset-btn" data-preset="videometa">Video Platform</button>
+        <button type="button" class="boe-preset-btn" data-preset="iotlog">IoT / Logging</button>
+      </div>
+    </div>
+  )}
+
+  <div class="boe-grid" role="region" aria-label="Estimation calculator">
+    <!-- Left Column: Inputs -->
+    <aside class="boe-inputs-card">
+      <div class="boe-card-header">
+        <h3 class="boe-card-title">Your system's inputs</h3>
+        <span class="boe-badge">Interactive</span>
+      </div>
+
+      <form id="boe-form" class="boe-form" onsubmit="return false;">
+        <!-- Input 1: DAU -->
+        <div class="boe-field">
+          <div class="boe-label-row">
+            <label for="boe-dau" class="boe-label">Daily active users (millions)</label>
+            <span class="boe-unit-pill">M users</span>
+          </div>
+          <div class="boe-input-wrap">
+            <input
+              id="boe-dau"
+              type="number"
+              min="0.001"
+              step="any"
+              value={initialDau}
+              class="boe-input"
+              aria-describedby="boe-dau-hint"
+              required
+            />
+          </div>
+          <span id="boe-dau-hint" class="boe-hint">10 = 10,000,000 users active in a 24h window</span>
+        </div>
+
+        <!-- Input 2: Write actions per user per day -->
+        <div class="boe-field">
+          <div class="boe-label-row">
+            <label for="boe-actions" class="boe-label">Write actions per user per day</label>
+            <span class="boe-unit-pill">writes/day</span>
+          </div>
+          <div class="boe-input-wrap">
+            <input
+              id="boe-actions"
+              type="number"
+              min="0.001"
+              step="any"
+              value={initialActions}
+              class="boe-input"
+              aria-describedby="boe-actions-hint"
+              required
+            />
+          </div>
+          <span id="boe-actions-hint" class="boe-hint">Posts, uploads, messages — anything that creates data.</span>
+        </div>
+
+        <!-- Input 3: Average payload size (KB) -->
+        <div class="boe-field">
+          <div class="boe-label-row">
+            <label for="boe-payload" class="boe-label">Average payload size (KB)</label>
+            <span class="boe-unit-pill">KB / record</span>
+          </div>
+          <div class="boe-input-wrap">
+            <input
+              id="boe-payload"
+              type="number"
+              min="0.001"
+              step="any"
+              value={initialPayloadKb}
+              class="boe-input"
+              aria-describedby="boe-payload-hint"
+              required
+            />
+          </div>
+          <span id="boe-payload-hint" class="boe-hint">Average record size (1 KB = 1,024 bytes)</span>
+        </div>
+
+        <!-- Input 4: Read : write ratio -->
+        <div class="boe-field">
+          <div class="boe-label-row">
+            <label for="boe-ratio" class="boe-label">Read : write ratio</label>
+          </div>
+          <div class="boe-select-wrap">
+            <select id="boe-ratio" class="boe-select">
+              <option value="1" selected={initialRatio === 1}>1:1 (write-heavy, e.g. logging)</option>
+              <option value="10" selected={initialRatio === 10}>10:1 (balanced, e.g. social feed)</option>
+              <option value="100" selected={initialRatio === 100}>100:1 (read-heavy, e.g. URL shortener)</option>
+              <option value="1000" selected={initialRatio === 1000}>1000:1 (extreme reads, e.g. CDN content)</option>
+            </select>
+            <div class="boe-select-arrow" aria-hidden="true">▾</div>
+          </div>
+        </div>
+
+        <!-- Input 5: Replication factor -->
+        <div class="boe-field">
+          <div class="boe-label-row">
+            <label for="boe-replication" class="boe-label">Replication factor</label>
+          </div>
+          <div class="boe-select-wrap">
+            <select id="boe-replication" class="boe-select">
+              <option value="1" selected={initialReplication === 1}>1x (no replication)</option>
+              <option value="2" selected={initialReplication === 2}>2x</option>
+              <option value="3" selected={initialReplication === 3}>3x (typical default)</option>
+            </select>
+            <div class="boe-select-arrow" aria-hidden="true">▾</div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="boe-actions-group">
+          <button type="button" id="boe-copy-link" class="boe-btn boe-btn-primary">
+            <svg class="boe-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span id="boe-copy-text">Copy link to inputs</span>
+          </button>
+          
+          <button type="button" id="boe-copy-markdown" class="boe-btn boe-btn-secondary" title="Copy markdown summary table for notes or interview">
+            <svg class="boe-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            <span id="boe-md-text">Copy as Markdown</span>
+          </button>
+
+          <button type="button" id="boe-reset" class="boe-btn boe-btn-ghost">
+            <svg class="boe-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            <span>Reset to defaults</span>
+          </button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Right Column: Derivation Pipeline & Output Cards -->
+    <main class="boe-outputs-column">
+      <!-- Derivation Flow Pipeline -->
+      <div class="boe-pipeline-card" aria-label="Derivation Pipeline">
+        <div class="boe-pipeline-title">Traffic Derivation Pipeline</div>
+        <ol class="boe-pipeline-steps" aria-label="How the traffic numbers are derived">
+          <li class="boe-step-node">
+            <span class="boe-step-tag">DAU</span>
+            <span class="boe-step-val" id="boe-pipe-dau">10.0M</span>
+          </li>
+          <li class="boe-step-arrow">→</li>
+          <li class="boe-step-node">
+            <span class="boe-step-tag" id="boe-pipe-writes-label">× 5 writes/day</span>
+            <span class="boe-step-val" id="boe-pipe-writes">50.0M</span>
+          </li>
+          <li class="boe-step-arrow">→</li>
+          <li class="boe-step-node">
+            <span class="boe-step-tag">÷ 86,400 QPS</span>
+            <span class="boe-step-val" id="boe-pipe-write-qps">579</span>
+          </li>
+          <li class="boe-step-arrow">→</li>
+          <li class="boe-step-node">
+            <span class="boe-step-tag" id="boe-pipe-read-label">× 100 read QPS</span>
+            <span class="boe-step-val" id="boe-pipe-read-qps">57.9K</span>
+          </li>
+          <li class="boe-step-arrow">→</li>
+          <li class="boe-step-node boe-step-node-peak">
+            <span class="boe-step-tag">× 3 peak</span>
+            <span class="boe-step-val" id="boe-pipe-peak-qps">174K</span>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Output Card 1: Traffic -->
+      <section class="boe-output-card" aria-labelledby="boe-heading-traffic">
+        <div class="boe-card-header">
+          <div class="boe-heading-with-icon">
+            <span class="boe-icon-badge">⚡</span>
+            <h4 id="boe-heading-traffic" class="boe-card-title">Traffic</h4>
+          </div>
+          <span class="boe-card-tag">Queries per second</span>
+        </div>
+
+        <div class="boe-metrics-grid">
+          <div class="boe-metric-item">
+            <div class="boe-metric-label">Average write QPS</div>
+            <div class="boe-metric-val" id="boe-val-avg-write-qps">579</div>
+            <div class="boe-metric-formula" id="boe-form-avg-write-qps">= 10.0M DAU × 5 writes / 86,400s</div>
+          </div>
+
+          <div class="boe-metric-item">
+            <div class="boe-metric-label">Peak write QPS</div>
+            <div class="boe-metric-val" id="boe-val-peak-write-qps">1.74K</div>
+            <div class="boe-metric-formula" id="boe-form-peak-write-qps">= avg × 3 (peak factor)</div>
+          </div>
+
+          <div class="boe-metric-item">
+            <div class="boe-metric-label">Average read QPS</div>
+            <div class="boe-metric-val" id="boe-val-avg-read-qps">57.9K</div>
+            <div class="boe-metric-formula" id="boe-form-avg-read-qps">= write QPS × 100 (read:write ratio)</div>
+          </div>
+
+          <div class="boe-metric-item boe-metric-highlight">
+            <div class="boe-metric-label">Peak read QPS</div>
+            <div class="boe-metric-val" id="boe-val-peak-read-qps">174K</div>
+            <div class="boe-metric-formula" id="boe-form-peak-read-qps">= read QPS × 3 (peak factor)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Output Card 2: Storage -->
+      <section class="boe-output-card" aria-labelledby="boe-heading-storage">
+        <div class="boe-card-header">
+          <div class="boe-heading-with-icon">
+            <span class="boe-icon-badge">💾</span>
+            <h4 id="boe-heading-storage" class="boe-card-title">Storage</h4>
+          </div>
+          <span class="boe-card-tag">Disk capacity</span>
+        </div>
+
+        <div class="boe-metrics-grid">
+          <div class="boe-metric-item">
+            <div class="boe-metric-label">New data per day</div>
+            <div class="boe-metric-val" id="boe-val-data-day">95.4 GB</div>
+            <div class="boe-metric-formula" id="boe-form-data-day">= 50.0M writes × 2 KB</div>
+          </div>
+
+          <div class="boe-metric-item">
+            <div class="boe-metric-label">New data per year</div>
+            <div class="boe-metric-val" id="boe-val-data-year">34.0 TB</div>
+            <div class="boe-metric-formula" id="boe-form-data-year">= daily volume × 365</div>
+          </div>
+
+          <div class="boe-metric-item boe-metric-highlight">
+            <div class="boe-metric-label" id="boe-label-replication">Stored with 3x replication</div>
+            <div class="boe-metric-val" id="boe-val-data-replicated">102 TB</div>
+            <div class="boe-metric-formula" id="boe-form-data-replicated">= yearly volume × 3 replicas</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Output Card 3: Bandwidth & Cache -->
+      <section class="boe-output-card" aria-labelledby="boe-heading-bandwidth">
+        <div class="boe-card-header">
+          <div class="boe-heading-with-icon">
+            <span class="boe-icon-badge">🌐</span>
+            <h4 id="boe-heading-bandwidth" class="boe-card-title">Bandwidth &amp; cache</h4>
+          </div>
+          <span class="boe-card-tag">Network &amp; RAM</span>
+        </div>
+
+        <div class="boe-metrics-grid">
+          <div class="boe-metric-item">
+            <div class="boe-metric-label">Ingress (writes)</div>
+            <div class="boe-metric-val" id="boe-val-ingress">1.13 MB/s</div>
+            <div class="boe-metric-formula" id="boe-form-ingress">= write QPS × 2 KB</div>
+          </div>
+
+          <div class="boe-metric-item">
+            <div class="boe-metric-label">Egress (reads)</div>
+            <div class="boe-metric-val" id="boe-val-egress">113 MB/s</div>
+            <div class="boe-metric-formula" id="boe-form-egress">= read QPS × 2 KB</div>
+          </div>
+
+          <div class="boe-metric-item boe-metric-highlight">
+            <div class="boe-metric-label">Cache for the hot set</div>
+            <div class="boe-metric-val" id="boe-val-cache">1.86 TB</div>
+            <div class="boe-metric-formula" id="boe-form-cache">= 20% of daily read volume (80/20 rule)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Caveat Box -->
+      <div class="boe-caveat-box">
+        <span class="boe-caveat-icon">ℹ️</span>
+        <p class="boe-caveat-text">
+          <strong>Interview convention:</strong> calculations use powers of two for storage (1 KB = 1,024 B, 1 MB = 1,024 KB) and powers of ten for rates (1M = 1,000,000). In a live round, round aggressively: treat 86,400s ≈ 100,000s ($10^5$) for rapid mental math.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  {showGuide && (
+    <section class="boe-guide-section" aria-labelledby="boe-guide-heading">
+      <h3 id="boe-guide-heading" class="boe-section-title">The Formulas &amp; Estimation Guide</h3>
+
+      <div class="boe-guide-cards">
+        <article class="boe-guide-card">
+          <div class="boe-guide-num">01</div>
+          <h4>Traffic: From Users to QPS</h4>
+          <p>
+            Start with Daily Active Users (DAU) and write actions per user. Since a day has 86,400 seconds:
+          </p>
+          <code>Write QPS = (DAU × Writes per user) / 86,400</code>
+          <p class="boe-tip">
+            <strong>Interview Shortcut:</strong> Approximate 86,400s as <strong>100,000s ($10^5$)</strong>. For 10M DAU × 5 writes = 50M writes / $10^5$ = <strong>500 QPS</strong> (vs exact 579 QPS, within 15% error).
+          </p>
+        </article>
+
+        <article class="boe-guide-card">
+          <div class="boe-guide-num">02</div>
+          <h4>Reads: The Ratio Shortcut</h4>
+          <p>
+            Consumer apps are vastly read-heavy. Rather than calculating reads from scratch, anchor them to writes via a read:write ratio:
+          </p>
+          <code>Read QPS = Write QPS × Read:Write Ratio</code>
+          <p class="boe-tip">
+            Typical ratios: <strong>1:1</strong> for IoT/audit logs, <strong>10:1</strong> for social feeds (Twitter/Instagram), <strong>100:1</strong> for URL shorteners, and <strong>1000:1</strong> for CDN media.
+          </p>
+        </article>
+
+        <article class="boe-guide-card">
+          <div class="boe-guide-num">03</div>
+          <h4>Storage: Writes × Payload × Retention</h4>
+          <p>
+            Storage accumulates linearly with writes. Compute daily accumulation, compound over the retention window, and apply replication:
+          </p>
+          <code>Daily Storage = Writes/day × Payload Size (KB)</code>
+          <code>Total Disk = Daily Storage × 365 Days × Replication (e.g. 3x)</code>
+          <p class="boe-tip">
+            Production distributed databases (Cassandra, Ceph, Spanner) default to <strong>3x replication</strong> across availability zones.
+          </p>
+        </article>
+
+        <article class="boe-guide-card">
+          <div class="boe-guide-num">04</div>
+          <h4>Cache: The 80/20 Pareto Rule</h4>
+          <p>
+            The Pareto principle states that 20% of the content generates 80% of the traffic. Sizing an in-memory Redis cluster for the daily "hot set":
+          </p>
+          <code>Hot Set Cache = 20% × Daily Read Volume</code>
+          <p class="boe-tip">
+            If daily read volume is ~10 TB, a <strong>2 TB cache cluster</strong> will achieve roughly an 80% cache hit ratio, shielding database read replicas.
+          </p>
+        </article>
+      </div>
+
+      <!-- Mental Math Cheatsheet Table -->
+      <div class="boe-cheatsheet-card">
+        <h4>System Design Mental Math Quick Reference</h4>
+        <div class="boe-table-responsive">
+          <table class="boe-table">
+            <thead>
+              <tr>
+                <th>Metric / Unit</th>
+                <th>Exact Value</th>
+                <th>Mental Math Approximation</th>
+                <th>Standard Scale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Seconds in a Day</td>
+                <td>86,400 s</td>
+                <td>~100,000 s ($10^5$)</td>
+                <td>Divide by $10^5$ to convert daily actions to QPS</td>
+              </tr>
+              <tr>
+                <td>1 Million (1M)</td>
+                <td>1,000,000</td>
+                <td>$10^6$</td>
+                <td>Common baseline for DAU &amp; Requests</td>
+              </tr>
+              <tr>
+                <td>1 Billion (1B)</td>
+                <td>1,000,000,000</td>
+                <td>$10^9$</td>
+                <td>High-scale platforms (Google, Meta, Cloudflare)</td>
+              </tr>
+              <tr>
+                <td>Kilobyte (KB)</td>
+                <td>1,024 Bytes</td>
+                <td>~1,000 Bytes ($10^3$)</td>
+                <td>Typical JSON metadata, short text record</td>
+              </tr>
+              <tr>
+                <td>Megabyte (MB)</td>
+                <td>1,048,576 Bytes</td>
+                <td>~$10^6$ Bytes (1 Million B)</td>
+                <td>Photos, short audio, code bundles</td>
+              </tr>
+              <tr>
+                <td>Gigabyte (GB)</td>
+                <td>1,073,741,824 Bytes</td>
+                <td>~$10^9$ Bytes (1 Billion B)</td>
+                <td>High-resolution video, DB partition, memory sizing</td>
+              </tr>
+              <tr>
+                <td>Terabyte (TB)</td>
+                <td>1,099,511,627,776 Bytes</td>
+                <td>~$10^{12}$ Bytes (1 Trillion B)</td>
+                <td>Annual database growth, primary storage nodes</td>
+              </tr>
+              <tr>
+                <td>Petabyte (PB)</td>
+                <td>1,125,899,906,842,624 Bytes</td>
+                <td>~$10^{15}$ Bytes</td>
+                <td>Data warehouse, cold storage archives (S3 Glacier)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )}
+</div>
+
+<style>
+  /* ----------------------------------------------------
+     THEME & DESIGN TOKENS
+     Light theme by default with clean cards and borders.
+     Automatically synchronizes with amoldighe.com's theme toggle:
+     - Light Mode: #fdfdfd canvas, crisp white cards, #006cac electric blue accent
+     - Dark Mode: #212737 slate navy canvas, #283046 cards, #ff6b01 orange accent
+     ---------------------------------------------------- */
+  .boe-container {
+    /* Default / Light Mode */
+    --boe-bg-canvas: var(--background, #fdfdfd);
+    --boe-bg-surface: #ffffff;
+    --boe-bg-surface-elevated: #f8fafc;
+    --boe-bg-input: #ffffff;
+    --boe-border: var(--border, #e2e8f0);
+    --boe-border-strong: #cbd5e1;
+    --boe-border-focus: var(--accent, #006cac);
+    --boe-text-primary: var(--foreground, #282728);
+    --boe-text-muted: var(--muted-foreground, #64748b);
+    --boe-text-faint: #94a3b8;
+    --boe-accent: var(--accent, #006cac);
+    --boe-accent-hover: #005a90;
+    --boe-accent-soft: rgba(0, 108, 172, 0.08);
+    --boe-accent-border: rgba(0, 108, 172, 0.28);
+    --boe-highlight: #0284c7;
+    --boe-highlight-soft: rgba(2, 132, 199, 0.08);
+    --boe-highlight-border: rgba(2, 132, 199, 0.28);
+    --boe-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --boe-font-mono: var(--font-google-sans-code, var(--font-app, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace));
+    --boe-radius-lg: 0.75rem;
+    --boe-radius-md: 0.5rem;
+    --boe-radius-sm: 0.375rem;
+
+    font-family: inherit;
+    color: var(--boe-text-primary);
+    background-color: transparent;
+    width: 100%;
+    margin: 1.5rem auto;
+    box-sizing: border-box;
+  }
+
+  /* Dark Theme adaptation for amoldighe.com (via [data-theme=dark] or html.dark) */
+  :global([data-theme="dark"]) .boe-container,
+  :global(html.dark) .boe-container,
+  :global(.dark) .boe-container {
+    --boe-bg-canvas: var(--background, #212737);
+    --boe-bg-surface: #283046;
+    --boe-bg-surface-elevated: #313b56;
+    --boe-bg-input: #1e2433;
+    --boe-border: #3b4668;
+    --boe-border-strong: #505d85;
+    --boe-border-focus: var(--accent, #ff6b01);
+    --boe-text-primary: var(--foreground, #eaedf3);
+    --boe-text-muted: var(--muted-foreground, #afb9ca);
+    --boe-text-faint: #7e8b9e;
+    --boe-accent: var(--accent, #ff6b01);
+    --boe-accent-hover: #e56000;
+    --boe-accent-soft: rgba(255, 107, 1, 0.12);
+    --boe-accent-border: rgba(255, 107, 1, 0.35);
+    --boe-highlight: #38bdf8;
+    --boe-highlight-soft: rgba(56, 189, 248, 0.12);
+    --boe-highlight-border: rgba(56, 189, 248, 0.35);
+    --boe-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Header */
+  .boe-header {
+    text-align: center;
+    margin-bottom: 1.75rem;
+  }
+  .boe-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem 0;
+    color: var(--boe-text-primary);
+    line-height: 1.25;
+  }
+  .boe-subtitle {
+    font-size: 0.95rem;
+    color: var(--boe-text-muted);
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* Presets Bar */
+  .boe-presets-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    background: var(--boe-bg-surface);
+    border: 1px solid var(--boe-border);
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--boe-radius-md);
+    margin-bottom: 1.25rem;
+  }
+  .boe-presets-label {
+    font-size: 0.775rem;
+    font-weight: 700;
+    color: var(--boe-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .boe-presets-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .boe-preset-btn {
+    background: var(--boe-bg-surface-elevated);
+    color: var(--boe-text-primary);
+    border: 1px solid var(--boe-border);
+    border-radius: var(--boe-radius-sm);
+    padding: 0.3rem 0.65rem;
+    font-size: 0.775rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+  }
+  .boe-preset-btn:hover {
+    background: var(--boe-accent-soft);
+    border-color: var(--boe-accent-border);
+    color: var(--boe-accent);
+  }
+
+  /* Main Grid */
+  .boe-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (max-width: 768px) {
+    .boe-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Cards */
+  .boe-inputs-card,
+  .boe-output-card,
+  .boe-pipeline-card,
+  .boe-guide-card,
+  .boe-cheatsheet-card {
+    background: var(--boe-bg-surface);
+    border: 1px solid var(--boe-border);
+    border-radius: var(--boe-radius-lg);
+    padding: 1.15rem;
+    box-shadow: var(--boe-shadow);
+    box-sizing: border-box;
+  }
+
+  .boe-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--boe-border);
+  }
+  .boe-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 !important;
+    color: var(--boe-text-primary);
+  }
+  .boe-heading-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .boe-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: var(--boe-radius-sm);
+    font-size: 0.9rem;
+    background: var(--boe-bg-surface-elevated);
+  }
+  .boe-badge {
+    background: var(--boe-accent-soft);
+    color: var(--boe-accent);
+    border: 1px solid var(--boe-accent-border);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+  }
+  .boe-card-tag {
+    font-size: 0.725rem;
+    color: var(--boe-text-muted);
+    font-family: var(--boe-font-mono);
+  }
+
+  /* Form */
+  .boe-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  .boe-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .boe-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .boe-label {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--boe-text-primary);
+  }
+  .boe-unit-pill {
+    font-size: 0.7rem;
+    color: var(--boe-text-muted);
+    font-family: var(--boe-font-mono);
+  }
+  .boe-hint {
+    font-size: 0.725rem;
+    color: var(--boe-text-faint);
+    line-height: 1.35;
+  }
+  .boe-input-wrap,
+  .boe-select-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .boe-input,
+  .boe-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--boe-text-primary);
+    background-color: var(--boe-bg-input);
+    border: 1px solid var(--boe-border-strong);
+    border-radius: var(--boe-radius-md);
+    box-sizing: border-box;
+    transition: all 0.15s ease-in-out;
+  }
+  .boe-input:focus,
+  .boe-select:focus {
+    outline: none;
+    border-color: var(--boe-border-focus);
+    box-shadow: 0 0 0 3px var(--boe-accent-soft);
+  }
+  .boe-select {
+    appearance: none;
+    padding-right: 2rem;
+    cursor: pointer;
+  }
+  .boe-select-arrow {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--boe-text-muted);
+    font-size: 0.8rem;
+  }
+
+  /* Action Buttons */
+  .boe-actions-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+  }
+  .boe-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.825rem;
+    font-weight: 600;
+    border-radius: var(--boe-radius-md);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    border: 1px solid transparent;
+  }
+  .boe-btn-primary {
+    background: var(--boe-accent);
+    color: #ffffff;
+  }
+  .boe-btn-primary:hover {
+    background: var(--boe-accent-hover);
+  }
+  .boe-btn-secondary {
+    background: var(--boe-bg-surface-elevated);
+    color: var(--boe-text-primary);
+    border-color: var(--boe-border);
+  }
+  .boe-btn-secondary:hover {
+    background: var(--boe-accent-soft);
+    border-color: var(--boe-accent-border);
+    color: var(--boe-accent);
+  }
+  .boe-btn-ghost {
+    background: transparent;
+    color: var(--boe-text-muted);
+    border-color: transparent;
+  }
+  .boe-btn-ghost:hover {
+    background: var(--boe-bg-surface-elevated);
+    color: var(--boe-text-primary);
+  }
+
+  /* Derivation Pipeline */
+  .boe-outputs-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+  .boe-pipeline-card {
+    padding: 0.875rem 1rem;
+  }
+  .boe-pipeline-title {
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--boe-text-muted);
+    margin-bottom: 0.625rem;
+  }
+  .boe-pipeline-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .boe-step-node {
+    display: inline-flex;
+    flex-direction: column;
+    background: var(--boe-bg-surface-elevated);
+    border: 1px solid var(--boe-border);
+    border-radius: var(--boe-radius-sm);
+    padding: 0.3rem 0.5rem;
+    min-width: 65px;
+  }
+  .boe-step-node-peak {
+    border-color: var(--boe-highlight-border);
+    background: var(--boe-highlight-soft);
+  }
+  .boe-step-tag {
+    font-size: 0.625rem;
+    color: var(--boe-text-faint);
+    text-transform: uppercase;
+  }
+  .boe-step-val {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--boe-text-primary);
+    font-family: var(--boe-font-mono);
+  }
+  .boe-step-arrow {
+    color: var(--boe-text-faint);
+    font-size: 0.8rem;
+  }
+
+  /* Metrics Grid */
+  .boe-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.65rem;
+  }
+  .boe-metric-item {
+    background: var(--boe-bg-surface-elevated);
+    border: 1px solid var(--boe-border);
+    border-radius: var(--boe-radius-md);
+    padding: 0.75rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.15s ease;
+  }
+  .boe-metric-item:hover {
+    border-color: var(--boe-border-strong);
+  }
+  .boe-metric-highlight {
+    border-color: var(--boe-accent-border);
+    background: var(--boe-accent-soft);
+  }
+  .boe-metric-label {
+    font-size: 0.75rem;
+    color: var(--boe-text-muted);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  .boe-metric-val {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--boe-text-primary);
+    font-family: var(--boe-font-mono);
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .boe-metric-formula {
+    font-size: 0.675rem;
+    color: var(--boe-text-faint);
+    font-family: var(--boe-font-mono);
+    line-height: 1.35;
+    word-break: break-all;
+  }
+
+  /* Caveat Box */
+  .boe-caveat-box {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    padding: 0.75rem 0.875rem;
+    background: var(--boe-bg-surface);
+    border: 1px dashed var(--boe-border-strong);
+    border-radius: var(--boe-radius-md);
+  }
+  .boe-caveat-icon {
+    font-size: 1.05rem;
+  }
+  .boe-caveat-text {
+    margin: 0 !important;
+    font-size: 0.775rem;
+    color: var(--boe-text-muted);
+    line-height: 1.45;
+  }
+
+  /* Guide Section */
+  .boe-guide-section {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--boe-border);
+  }
+  .boe-section-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 0 1.25rem 0;
+    color: var(--boe-text-primary);
+    text-align: center;
+  }
+  .boe-guide-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .boe-guide-card {
+    position: relative;
+    padding: 1.15rem;
+  }
+  .boe-guide-num {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--boe-accent);
+    opacity: 0.6;
+    margin-bottom: 0.35rem;
+    font-family: var(--boe-font-mono);
+  }
+  .boe-guide-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem 0 !important;
+    color: var(--boe-text-primary);
+  }
+  .boe-guide-card p {
+    font-size: 0.825rem;
+    color: var(--boe-text-muted);
+    line-height: 1.45;
+    margin: 0 0 0.65rem 0 !important;
+  }
+  .boe-guide-card code {
+    display: block;
+    background: var(--boe-bg-input);
+    border: 1px solid var(--boe-border);
+    padding: 0.4rem 0.65rem;
+    border-radius: var(--boe-radius-sm);
+    font-size: 0.775rem;
+    color: var(--boe-accent);
+    font-family: var(--boe-font-mono);
+    margin-bottom: 0.65rem;
+    word-break: break-all;
+  }
+  .boe-tip {
+    font-size: 0.775rem !important;
+    background: var(--boe-bg-surface-elevated);
+    padding: 0.45rem 0.65rem;
+    border-radius: var(--boe-radius-sm);
+    border-left: 3px solid var(--boe-accent);
+  }
+
+  /* Cheatsheet Table */
+  .boe-cheatsheet-card {
+    margin-bottom: 1.5rem;
+  }
+  .boe-cheatsheet-card h4 {
+    margin: 0 0 0.875rem 0 !important;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--boe-text-primary);
+  }
+  .boe-table-responsive {
+    overflow-x: auto;
+  }
+  .boe-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+    text-align: left;
+  }
+  .boe-table th {
+    background: var(--boe-bg-surface-elevated);
+    padding: 0.6rem 0.85rem;
+    font-weight: 700;
+    color: var(--boe-text-primary);
+    border-bottom: 2px solid var(--boe-border);
+  }
+  .boe-table td {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--boe-border);
+    color: var(--boe-text-muted);
+  }
+  .boe-table tbody tr:hover {
+    background: var(--boe-bg-surface-elevated);
+  }
+</style>
+
+<script>
+  (() => {
+    function initBoeCalculator() {
+      const container = document.querySelector('.boe-container');
+      if (!container) return;
+
+      const dauInput = document.getElementById('boe-dau') as HTMLInputElement | null;
+      const actionsInput = document.getElementById('boe-actions') as HTMLInputElement | null;
+      const payloadInput = document.getElementById('boe-payload') as HTMLInputElement | null;
+      const ratioSelect = document.getElementById('boe-ratio') as HTMLSelectElement | null;
+      const replSelect = document.getElementById('boe-replication') as HTMLSelectElement | null;
+
+      const copyLinkBtn = document.getElementById('boe-copy-link');
+      const copyMdBtn = document.getElementById('boe-copy-markdown');
+      const resetBtn = document.getElementById('boe-reset');
+
+      if (!dauInput || !actionsInput || !payloadInput || !ratioSelect || !replSelect) {
+        return;
+      }
+
+      // Explicit non-null elements for strict TypeScript narrowing
+      const dauEl = dauInput;
+      const actionsEl = actionsInput;
+      const payloadEl = payloadInput;
+      const ratioEl = ratioSelect;
+      const replEl = replSelect;
+
+      const presets: Record<string, { dau: number; actions: number; kb: number; ratio: number; repl: number }> = {
+        twitter: { dau: 250, actions: 2, kb: 1, ratio: 100, repl: 3 },
+        urlshortener: { dau: 100, actions: 1, kb: 0.5, ratio: 100, repl: 3 },
+        chatapp: { dau: 50, actions: 40, kb: 2, ratio: 10, repl: 3 },
+        videometa: { dau: 100, actions: 0.2, kb: 5, ratio: 1000, repl: 3 },
+        iotlog: { dau: 10, actions: 100, kb: 1, ratio: 1, repl: 2 }
+      };
+
+      function roundNum(e: number): string {
+        if (e >= 100) {
+          return Math.round(e).toLocaleString("en-US");
+        } else if (e >= 10) {
+          return e.toFixed(1);
+        } else {
+          return e.toFixed(2).replace(/\.?0+$/, "") || "0";
+        }
+      }
+
+      function formatRate(e: number): string {
+        if (e >= 1e9) return `${roundNum(e / 1e9)}B`;
+        if (e >= 1e6) return `${roundNum(e / 1e6)}M`;
+        if (e >= 1e3) return `${roundNum(e / 1e3)}K`;
+        return roundNum(e);
+      }
+
+      function formatBytes(bytes: number): string {
+        const units = ["KB", "MB", "GB", "TB", "PB"];
+        let val = bytes / 1024;
+        let unitIdx = 0;
+        while (val >= 1024 && unitIdx < units.length - 1) {
+          val /= 1024;
+          unitIdx++;
+        }
+        return `${roundNum(val)} ${units[unitIdx]}`;
+      }
+
+      function calculate() {
+        const dauMillions = Math.max(parseFloat(dauEl.value) || 0, 0);
+        const actionsPerDay = Math.max(parseFloat(actionsEl.value) || 0, 0);
+        const payloadKb = Math.max(parseFloat(payloadEl.value) || 0, 0);
+        const readWriteRatio = Math.max(parseFloat(ratioEl.value) || 1, 1);
+        const replication = Math.max(parseInt(replEl.value, 10) || 1, 1);
+
+        const totalUsers = dauMillions * 1e6;
+        const totalWritesDay = totalUsers * actionsPerDay;
+        const writeQps = totalWritesDay / 86400;
+        const peakWriteQps = 3 * writeQps;
+        const readQps = writeQps * readWriteRatio;
+        const peakReadQps = 3 * readQps;
+
+        const payloadBytes = payloadKb * 1024;
+        const dailyStorageBytes = totalWritesDay * payloadBytes;
+        const yearlyStorageBytes = 365 * dailyStorageBytes;
+        const replicatedStorageBytes = yearlyStorageBytes * replication;
+
+        const ingressBytesSec = writeQps * payloadBytes;
+        const egressBytesSec = readQps * payloadBytes;
+        const dailyReadVolumeBytes = 86400 * readQps * payloadBytes;
+        const cacheBytes = 0.20 * dailyReadVolumeBytes;
+
+        setText('boe-pipe-dau', `${roundNum(dauMillions)}M`);
+        setText('boe-pipe-writes-label', `× ${roundNum(actionsPerDay)} writes/day`);
+        setText('boe-pipe-writes', formatRate(totalWritesDay));
+        setText('boe-pipe-write-qps', formatRate(writeQps));
+        setText('boe-pipe-read-label', `× ${readWriteRatio} read QPS`);
+        setText('boe-pipe-read-qps', formatRate(readQps));
+        setText('boe-pipe-peak-qps', formatRate(peakReadQps));
+
+        setText('boe-val-avg-write-qps', formatRate(writeQps));
+        setText('boe-form-avg-write-qps', `= ${roundNum(dauMillions)}M DAU × ${roundNum(actionsPerDay)} writes / 86,400s`);
+        setText('boe-val-peak-write-qps', formatRate(peakWriteQps));
+        setText('boe-form-peak-write-qps', `= avg × 3 (peak factor)`);
+        setText('boe-val-avg-read-qps', formatRate(readQps));
+        setText('boe-form-avg-read-qps', `= write QPS × ${readWriteRatio} (read:write ratio)`);
+        setText('boe-val-peak-read-qps', formatRate(peakReadQps));
+        setText('boe-form-peak-read-qps', `= read QPS × 3 (peak factor)`);
+
+        setText('boe-val-data-day', formatBytes(dailyStorageBytes));
+        setText('boe-form-data-day', `= ${formatRate(totalWritesDay)} writes × ${roundNum(payloadKb)} KB`);
+        setText('boe-val-data-year', formatBytes(yearlyStorageBytes));
+        setText('boe-form-data-year', `= daily volume × 365`);
+        setText('boe-label-replication', `Stored with ${replication}x replication`);
+        setText('boe-val-data-replicated', formatBytes(replicatedStorageBytes));
+        setText('boe-form-data-replicated', `= yearly volume × ${replication} replicas`);
+
+        setText('boe-val-ingress', `${formatBytes(ingressBytesSec)}/s`);
+        setText('boe-form-ingress', `= write QPS × ${roundNum(payloadKb)} KB`);
+        setText('boe-val-egress', `${formatBytes(egressBytesSec)}/s`);
+        setText('boe-form-egress', `= read QPS × ${roundNum(payloadKb)} KB`);
+        setText('boe-val-cache', formatBytes(cacheBytes));
+        setText('boe-form-cache', `= 20% of daily read volume (80/20 rule)`);
+      }
+
+      function setText(id: string, text: string) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      }
+
+      [dauEl, actionsEl, payloadEl].forEach(inp => inp.addEventListener('input', calculate));
+      [ratioEl, replEl].forEach(sel => sel.addEventListener('change', calculate));
+
+      document.querySelectorAll('.boe-preset-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLButtonElement;
+          const key = target.dataset.preset;
+          if (key && presets[key]) {
+            const p = presets[key];
+            dauEl.value = p.dau.toString();
+            actionsEl.value = p.actions.toString();
+            payloadEl.value = p.kb.toString();
+            ratioEl.value = p.ratio.toString();
+            replEl.value = p.repl.toString();
+            calculate();
+          }
+        });
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('dau')) dauEl.value = params.get('dau')!;
+      if (params.has('actions')) actionsEl.value = params.get('actions')!;
+      if (params.has('kb')) payloadEl.value = params.get('kb')!;
+      if (params.has('ratio')) ratioEl.value = params.get('ratio')!;
+      if (params.has('repl')) replEl.value = params.get('repl')!;
+
+      copyLinkBtn?.addEventListener('click', async () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('dau', dauEl.value);
+        url.searchParams.set('actions', actionsEl.value);
+        url.searchParams.set('kb', payloadEl.value);
+        url.searchParams.set('ratio', ratioEl.value);
+        url.searchParams.set('repl', replEl.value);
+        const fullUrl = url.toString();
+        const copyTextEl = document.getElementById('boe-copy-text');
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(fullUrl);
+          } else {
+            window.prompt('Copy link:', fullUrl);
+          }
+          if (copyTextEl) {
+            const prev = copyTextEl.textContent;
+            copyTextEl.textContent = 'Link copied!';
+            setTimeout(() => { copyTextEl.textContent = prev; }, 2000);
+          }
+        } catch {
+          window.prompt('Copy link:', fullUrl);
+        }
+      });
+
+      copyMdBtn?.addEventListener('click', async () => {
+        const dau = dauEl.value;
+        const actions = actionsEl.value;
+        const kb = payloadEl.value;
+        const ratio = ratioEl.value;
+        const repl = replEl.value;
+        const writeQps = document.getElementById('boe-val-avg-write-qps')?.textContent || '';
+        const peakWrite = document.getElementById('boe-val-peak-write-qps')?.textContent || '';
+        const readQps = document.getElementById('boe-val-avg-read-qps')?.textContent || '';
+        const peakRead = document.getElementById('boe-val-peak-read-qps')?.textContent || '';
+        const dataDay = document.getElementById('boe-val-data-day')?.textContent || '';
+        const dataYear = document.getElementById('boe-val-data-year')?.textContent || '';
+        const dataRepl = document.getElementById('boe-val-data-replicated')?.textContent || '';
+        const ingress = document.getElementById('boe-val-ingress')?.textContent || '';
+        const egress = document.getElementById('boe-val-egress')?.textContent || '';
+        const cache = document.getElementById('boe-val-cache')?.textContent || '';
+
+        const md = [
+          `### Back-of-the-Envelope Capacity Estimate`,
+          `**Inputs:** ${dau}M DAU | ${actions} writes/user/day | ${kb} KB payload | ${ratio}:1 Read/Write | ${repl}x Replication\n`,
+          `| Category | Metric | Estimated Value |`,
+          `| :--- | :--- | :--- |`,
+          `| **Traffic** | Average Write QPS | \`${writeQps}\` |`,
+          `| | Peak Write QPS (3x) | \`${peakWrite}\` |`,
+          `| | Average Read QPS | \`${readQps}\` |`,
+          `| | Peak Read QPS (3x) | \`${peakRead}\` |`,
+          `| **Storage** | Daily New Data | \`${dataDay}\` |`,
+          `| | Annual New Data | \`${dataYear}\` |`,
+          `| | Stored with ${repl}x Replication | \`${dataRepl}\` |`,
+          `| **Bandwidth & Cache** | Ingress (Writes) | \`${ingress}\` |`,
+          `| | Egress (Reads) | \`${egress}\` |`,
+          `| | 80/20 Hot Set Cache | \`${cache}\` |`
+        ].join('\n');
+
+        const mdTextEl = document.getElementById('boe-md-text');
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(md);
+          } else {
+            window.prompt('Copy markdown summary:', md);
+          }
+          if (mdTextEl) {
+            const prev = mdTextEl.textContent;
+            mdTextEl.textContent = 'Copied to clipboard!';
+            setTimeout(() => { mdTextEl.textContent = prev; }, 2000);
+          }
+        } catch {
+          window.prompt('Copy markdown summary:', md);
+        }
+      });
+
+      resetBtn?.addEventListener('click', () => {
+        dauEl.value = '10';
+        actionsEl.value = '5';
+        payloadEl.value = '2';
+        ratioEl.value = '100';
+        replEl.value = '3';
+        calculate();
+        const url = new URL(window.location.href);
+        url.search = '';
+        window.history.replaceState({}, '', url.toString());
+      });
+
+      calculate();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initBoeCalculator);
+    } else {
+      initBoeCalculator();
+    }
+    document.addEventListener('astro:page-load', initBoeCalculator);
+  })();
+</script>
